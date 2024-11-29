@@ -14,4 +14,4 @@
 
 ## 平台简介
 
-基于若依框架的spring-boot
+基于若依框架的spring-boot 图书管理系统
