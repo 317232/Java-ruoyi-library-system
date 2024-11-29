@@ -15,3 +15,12 @@
 ## 平台简介
 
 基于若依框架的spring-boot 图书管理系统
+技术介绍：
+核心框架：Spring Boot。
+安全框架：Apache Shiro。
+模板引擎：Thymeleaf。
+持久层框架：MyBatis。
+数据库连接池：Druid。
+工具类：Fastjson。
+
+
