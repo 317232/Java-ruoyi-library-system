@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('查看借阅信息')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="post-form">
+                <div class="select-list">
+                    <ul>
+                        <li class="select-time">
+                            <label>借阅时间：</label>
+                            <input type="text" class="time-input" id="borrowStartTime" name="borrowStartTime"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="borrowEndTime" name="borrowEndTime"/>
+                        </li>
+                        <li class="select-time">
+                            <label style="width: 91px;">预定归还时间：</label>
+                            <input type="text" class="time-input" id="startTime" name="startTime"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" name="endTime"/>
+                        </li>
+                        <li class="select-time">
+                            <label style="width: 91px;">实际归还时间：</label>
+                            <input type="text" class="time-input" id="returnStartTime" name="returnStartTime"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="returnEndTime" name="returnEndTime"/>
+                        </li>
+                        <li class="select-time">
+                            <label>状态：</label>
+                            <select class="form-control m-b" name="status">
+                                <option value="">---请选择状态---</option>
+                                <option value="0">未归还</option>
+                                <option value="1">已归还</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var datas = [[${@dict.getType('sys_normal_disable')}]];
+    var prefix = ctx + "books/book";
+    var returnFlag= [[${@permission.hasPermi('books:book:returnBook')}]];
+
+    $(function () {
+        var options = {
+            returnUrl: prefix + "/returnBook/{id}",
+            url: prefix + "/viewBorrow",
+            method: 'get',
+            modalName: "借阅信息",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'cardId',
+                    title: '借阅证编号',
+                    sortable: true
+                },
+                {
+                    field: 'bookId',
+                    title: '图书编号',
+                    sortable: true
+                },
+                {
+                    field: 'userName',
+                    title: '借阅者',
+                    sortable: true
+                },
+                {
+                    field: 'borrowDate',
+                    title: '借阅时间',
+                    sortable: true
+                },
+                {
+                    field: 'endDate',
+                    title: '预定归还时间',
+                    sortable: true
+                },
+                {
+                    field: 'returnDate',
+                    title: '实际归还时间',
+                    sortable: true
+                },
+                {
+                    field: 'illegal',
+                    title: '违约记录',
+                    sortable: true
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+
+    });
+</script>
+</body>
+</html>

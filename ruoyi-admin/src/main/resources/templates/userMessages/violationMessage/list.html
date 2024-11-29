@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('违章信息列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var datas = [[${@dict.getType('sys_normal_disable')}]];
+    var prefix = ctx + "userMessages/violationMessage";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            modalName: "违章信息",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'cardId',
+                    title: '借阅证编号',
+                    align: 'center'
+                },
+                {
+                    field: 'bookId',
+                    title: '书籍编号',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'borrowDate',
+                    title: '借阅时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'endDate',
+                    title: '最后借阅时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'returnDate',
+                    title: '归还时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'illegal',
+                    title: '逾期时间',
+                    align: 'center',
+                    sortable: true
+                }]
+        };
+        $.table.init(options);
+    });
+
+</script>
+</body>
+</html>

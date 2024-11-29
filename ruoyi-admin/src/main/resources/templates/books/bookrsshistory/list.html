@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('图书订阅列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="post-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            订阅编号：<input type="text" name="id"/>
+                        </li>
+                        <li>
+                            订阅者：<input type="text" name="userName"/>
+                        </li>
+                        <li>
+                            书名：<input type="text" name="bookName"/>
+                        </li>
+                        <li>
+                            作者：<input type="text" name="author"/>
+                        </li>
+                        <li>
+                            图书馆名：<input type="text" name="libraryName"/>
+                        </li>
+                        <li>
+                            <lebel>发布时间：</lebel>
+                            <input type="text" class="time-input" id="createStartTime" name="createStartTime">
+                            <span>-</span>
+                            <input type="text" class="time-input" id="createEndTime" name="createEndTime">
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="books:bookrsshistory:add">
+                <i class="fa fa-remove"></i> 新增
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="books:bookrsshistory:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var removeFlag = [[${@permission.hasPermi('books:bookrsshistory:remove')}]];
+    var datas = [[${@dict.getType('book_borrow')}]];
+    var prefix = ctx + "books/bookrsshistory";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            removeUrl: prefix + "/remove",
+            createUrl: prefix + "/add",
+            modalName: "订阅",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '订阅编号',
+                    sortable: true
+                },
+                {
+                    field: 'bookName',
+                    title: '书名'
+                },
+                {
+                    field: 'author',
+                    title: '作者',
+                    sortable: true
+                },
+                {
+                    field: 'libraryName',
+                    title: '所在图书馆',
+                    sortable: true
+                },
+                {
+                    field: 'userName',
+                    title: '订阅者',
+                    sortable: true
+                },
+                {
+                    field: "createTime",
+                    title: '创建时间',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

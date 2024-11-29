@@ -1,0 +1,76 @@
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('公告列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <h2>近期公告</h2>
+            <form id="post-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            公告编号 <input type="text" name="id">
+                        </li>
+                        <li>
+                            公告标题:<select name="title" id="title">
+                            <option value=""></option>
+                            <option th:each="dict:${tnotices}" th:text="${dict.title}" th:value="${dict.title}"></option>
+                        </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+
+
+        <div class="col-sm-12 select-table table-striped">
+
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var datas = [[${@dict.getType('sys_normal_disable')}]];
+    var prefix = ctx + "userMessages/noticeSelective";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            exportUrl: prefix + "/export",
+            modalName: "公告",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '公告编号'
+                },
+                {
+                    field: 'title',
+                    title: '公告标题',
+                    sortable: true
+                },
+                {
+                    field: 'detail',
+                    title: '公告内容',
+                    sortable: true
+                },
+                {
+                    field: 'publishDate',
+                    title: '公告发布时间',
+                    sortable: true
+                }
+                ]};
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

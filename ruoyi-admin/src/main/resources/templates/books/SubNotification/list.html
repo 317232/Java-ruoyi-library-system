@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('订阅通知')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="post-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            用户名：<input type="text" name="userName"/>
+                        </li>
+                        <li>
+                            消息内容：<input type="text" name="content"/>
+                        </li>
+                        <li>
+                            <label>创建时间</label>
+                            <input type="text" class="time-input" id="createStartTime" name="createStartTime">
+                            <span>-</span>
+                            <input type="text" class="time-input" id="createEndTime" name="createEndTime">
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="books:SubNotification:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var removeFlag = [[${@permission.hasPermi('books:SubNotification:remove')}]];
+    var datas = [[${@dict.getType('book_borrow')}]];
+    var prefix = ctx + "books/SubNotification";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            removeUrl: prefix + "/remove",
+            modalName: "订阅通知",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '订阅通知编号',
+                    sortable: true
+                },
+                {
+                    field: 'userName',
+                    title: '用户名',
+                    sortable: true
+                },
+                {
+                    field: 'content',
+                    title: '消息内容',
+                    sortable: true
+                },
+                {
+                    field: 'isRead',
+                    title: '是否已读',
+                    sortable: true
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>

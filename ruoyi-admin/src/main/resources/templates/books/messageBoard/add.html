@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增书籍')" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-MessageBoard-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">借阅证：</label>
+            <div class="col-sm-8">
+                <select id="cardId" name="cardId" class="form-control m-b">
+                    <option value="">---请选择借阅证---</option>
+                    <option th:each="dict : ${cards}" th:text="${dict.id}" th:value="${dict.id}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">留言板：</label>
+            <div class="col-sm-8">
+                <textarea class="form-control" name="content" id="content" required></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<script type="text/javascript">
+    var prefix = ctx + "books/messageBoard";
+
+    $("#form-MessageBoard-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-MessageBoard-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

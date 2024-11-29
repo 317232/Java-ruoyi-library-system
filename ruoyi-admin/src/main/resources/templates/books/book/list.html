@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('书籍列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="post-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            书名：<input type="text" name="name"/>
+                        </li>
+                        <li>
+                            作者：<input type="text" name="author"/>
+                        </li>
+                        <li>
+                            描述：<input type="text" name="description"/>
+                        </li>
+                        <li>
+                            位置：<input type="text" name="position"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="books:book:add">
+                <i class="fa fa-plus"></i> 新增
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="books:book:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="books:book:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="books:book:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var viewborrowFlag = [[${@permission.hasPermi('books:book:viewborrow')}]];
+    var borrowFlag = [[${@permission.hasPermi('books:book:borrow')}]];
+    var returnFlag= [[${@permission.hasPermi('books:book:returnBook')}]];
+    var renewFlag = [[${@permission.hasPermi('books:book:renewBook')}]];
+    var NotificationFlag= [[${@permission.hasPermi('books:book:notification')}]];
+    var editFlag = [[${@permission.hasPermi('books:book:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('books:book:remove')}]];
+    var datas = [[${@dict.getType('book_borrow')}]];
+    var prefix = ctx + "books/book";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            viewUrl: prefix + "/viewBorrow/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            returnUrl:prefix + "/returnBook/{id}",
+            renewUrl:prefix + "/renewBook/{id}",
+            notificationUrl:prefix+"/addNotification/{id}",
+            modalName: "书籍",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '书籍编号'
+                },
+                {
+                    field: 'name',
+                    title: '书籍名字',
+                    sortable: true
+                },
+                {
+                    field: 'author',
+                    title: '作者',
+                    sortable: true
+                },
+                {
+                    field: 'position',
+                    title: '书籍位置',
+                    sortable: true
+                },
+                {
+                    field: 'libraryName',
+                    title: '所在图书馆',
+                    sortable: true
+                },
+                {
+                    field: 'sortName',
+                    title: '所属分类',
+                    sortable: true
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                },
+                {
+                    field: 'description',
+                    title: '简介',
+                    sortable: true,
+                    cellStyle: formatTableUnit,
+                    formatter: paramsMatter
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs ' + viewborrowFlag + '" href="javascript:void(0)" onclick="$.operate.view(\'' + row.id + '\')"><i class="fa fa-info"></i>查看借阅</a> ');
+                        actions.push('<a <a class="btn btn-default btn-xs ' + borrowFlag + '" href="javascript:void(0)" onclick="$.operate.addBorrow(\'' + row.id + '\',\''+prefix+"/borrow/"+row.id+'\')"><i class="fa fa-edit"></i>借阅图书</a>');
+                        actions.push('<a <a class="btn btn-default btn-xs ' + returnFlag + '" href="javascript:void(0)" onclick="$.operate.returnborrow(\'' + row.id + '\')"><i class="fa fa-edit"></i>归还图书</a>');
+                        actions.push('<a <a class="btn btn-default btn-xs ' + renewFlag + '" href="javascript:void(0)" onclick="$.operate.renewbook(\'' + row.id + '\')"><i class="fa fa-edit"></i>续借</a>');
+                        actions.push('<a <a class="btn btn-info btn-xs ' + NotificationFlag + '" href="javascript:void(0)" onclick="$.operate.notification(\''+ row.id +'\')"><i class="fa fa-edit"></i>订阅图书</a>')
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function formatTableUnit(value, row, index) {
+        return {
+            css: {
+                "white-space": "nowrap",
+                "text-overflow": "ellipsis",
+                "overflow": "hidden",
+                "max-width": "60px"
+            }
+        }
+    }
+
+    //表格超出宽度鼠标悬停显示td内容
+    function paramsMatter(value, row, index) {
+        var span = document.createElement("span");
+        span.setAttribute("title", value);
+        span.innerHTML = value;
+        return span.outerHTML;
+    }
+
+
+</script>
+</body>
+</html>

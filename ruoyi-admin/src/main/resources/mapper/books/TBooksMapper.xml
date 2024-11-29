@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.TBooksMapper">
+    <resultMap id="BaseResultMap" type="com.ruoyi.web.domain.vo.TBooksVo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="author" jdbcType="VARCHAR" property="author" />
+        <result column="library_id" jdbcType="INTEGER" property="libraryId" />
+        <result column="sort_id" jdbcType="INTEGER" property="sortId" />
+        <result column="position" jdbcType="VARCHAR" property="position" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    </resultMap>
+    <sql id="Base_Column_List">
+      select tb.id, tb.name, tb.author, tb.library_id, tb.sort_id, tb.position, tb.status, tb.description
+    </sql>
+    <select id="selectList" parameterType="com.ruoyi.web.domain.vo.TBooksVo" resultMap="BaseResultMap">
+        <include refid="Base_Column_List" />
+        ,tl.name as libraryName,tbs.name as sortName from t_books tb
+        left join t_library tl on tb.library_id = tl.id
+        left join t_book_sort tbs on tb.sort_id = tbs.id
+        <where>
+            tb.is_delete = 0
+            <if test="name != null  and name != ''">and tb.name like concat ('%',#{name},'%')</if>
+            <if test="author != null  and author != ''">and tb.author like concat ('%',#{author},'%')</if>
+            <if test="position != null and position != ''">and tb.position like concat ('%',#{position},'%')</if>
+            <if test="description != null and description != ''">and tb.description like concat ('%',#{description},'%')</if>
+        </where>
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <include refid="Base_Column_List" />
+        from t_books tb where tb.id = #{id,jdbcType=INTEGER} and tb.is_delete = 0
+    </select>
+
+    <select id="selectByStatus2" resultMap="BaseResultMap">
+        <include refid="Base_Column_List" />
+        from t_books tb where tb.status = 2 and tb.is_delete = 0
+    </select>
+
+    <select id="findDataName" parameterType="com.ruoyi.web.domain.vo.TBooksVo" resultMap="BaseResultMap">
+        select tb.name
+        from t_books tb
+    </select>
+
+    <select id="selectByBookName" parameterType="com.ruoyi.web.domain.vo.TBooksVo" resultMap="BaseResultMap">
+        <include refid="Base_Column_List" />
+        from t_books tb
+        where tb.name = #{name,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.ruoyi.web.domain.TBooks">
+        insert into t_books
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="author != null">
+                author,
+            </if>
+            <if test="libraryId != null">
+                library_id,
+            </if>
+            <if test="sortId != null">
+                sort_id,
+            </if>
+            <if test="position != null">
+                position,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="libraryId != null">
+                #{libraryId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="position != null">
+                #{position,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.web.domain.TBooks">
+        update t_books
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                author = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="libraryId != null">
+                library_id = #{libraryId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="position != null">
+                position = #{position,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="returnBorrow" parameterType="com.ruoyi.web.domain.TBooks">
+        update t_books
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="author != null">
+                author = #{author,jdbcType=VARCHAR},
+            </if>
+            <if test="libraryId != null">
+                library_id = #{libraryId,jdbcType=INTEGER},
+            </if>
+            <if test="sortId != null">
+                sort_id = #{sortId,jdbcType=INTEGER},
+            </if>
+            <if test="position != null">
+                position = #{position,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="deleteByPrimaryKey" parameterType="java.util.List">
+        <foreach collection="ids" item="id" separator=";">
+            update t_books set is_delete = 1 where id = #{id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+  <th:block th:include="include :: header('读者规则查看')"/>
+
+</head>
+<script src="static/js/jquery.min.js"></script>
+<style>
+  li{
+    list-style-type: none;
+  }
+  .txt-con{
+    align-content: center;
+    text-align: center;
+  }
+  .txt-id{
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+
+  }
+  .txt-bottom{
+    text-align: center;
+  }
+  .hid-show {
+    background: white;
+    color: #000;
+    position: relative;
+    border: 1px solid;
+  }
+</style>
+<body class="gray-bg">
+<h1 style="align-content: center; text-align: center">读者规则查看</h1>
+
+<div class="container-div">
+  <div class="row">
+    <div class="col-sm-12 fa-header-title" >
+      <ul >
+        <li style="justify-content: center; height:90px;background: #ad9cde;list-style-type: none; margin:70px;"
+            th:each="borrowRule, iterStat : ${borrowRules}">
+
+          <div class="txt-con hover-trigger" style="border-bottom:solid 1px #5656ce">
+            <span class="txt-id">借阅规则编号</span><span th:text="${borrowRule.id}" class="txt-id "></span>
+          </div>
+
+          <div class="hid-show" style="display:none;">
+            <ul>
+              <li class="txt-bottom">规则名称:<span th:text="${borrowRule.rulesName}"></span></li>
+              <li class=" txt-bottom">可借阅数:<span th:text="${borrowRule.borrowNum}"></span></li>
+              <li class=" txt-bottom">借阅天数:<span th:text="${borrowRule.limitDay}"></span></li>
+              <li class="txt-bottom">可借阅图书馆:<span th:text="${borrowRule.borrowLibrary}"></span></li>
+              <li class="txt-bottom">逾期金额/天:<span th:text="${borrowRule.overtimeFee}"></span></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+
+  </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+
+  var prefix = ctx + "userMessages/borrowRulesMessage";
+
+
+  $(document).ready(function() {
+    $('.hover-trigger').hover(
+            function() {
+              // 当鼠标悬停在.hover-trigger上时
+              var $this = $(this); // 当前hover的.hover-trigger元素
+              $this.closest('li').find('.hid-show').show(); // 找到最近的li元素内的.hid-show并显示它
+            },
+            function() {
+              // 当鼠标离开.hover-trigger时
+              var $this = $(this); // 当前hover的.hover-trigger元素
+              $this.closest('li').find('.hid-show').hide(); // 找到最近的li元素内的.hid-show并隐藏它
+            }
+    );
+  });
+</script>
+</body>
+</html>

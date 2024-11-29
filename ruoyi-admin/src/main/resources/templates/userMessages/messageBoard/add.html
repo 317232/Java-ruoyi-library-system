@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('留言版')" />
+</head>
+<style>
+    .btn-n{
+        margin:20px 100px 0;
+        width: 100px;
+
+    }
+</style>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal" id="form-Message-add">
+
+        <input id="cardId" name="cardId" type="hidden" th:value="${cardId}" >
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">留言内容：</label>
+            <div class="col-sm-8">
+                <textarea style="height: 250px; " class="form-control" name="content" id="content" ></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button  type="button" class="btn btn-n btn-sm btn-primary" onclick="submitMessage()"><i class="fa fa-check"></i>提交</button>&nbsp;
+                <button  type="button" class="btn btn-n btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+                <button  type="button" class="btn btn-n btn-sm btn-dark" onclick="viewmessage()"><i class="fa fa-check"></i>查看留言</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<th:block th:include="include :: footer" />
+<script type="text/javascript">
+    var prefix =ctx + "userMessages/messageBoard";
+    var modalName ="留言"
+
+
+    $("#form-Message-add").validate({
+        focusCleanup: true
+    });
+    function submitMessage() {
+        if($.validate.form("form-Message-add")){
+            $.operate.saveModal(prefix + "/add", $('#form-Message-add').serialize());
+        }
+    }
+    // 查看留言
+    function viewmessage(){
+        var url = prefix + "/viewmessage"
+        $.modal.popupRight(modalName + "信息详情", url);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('借阅表格可视化')" />
+
+	<script th:src="@{/js/echarts.min.js}"></script>
+</head>
+<body class="gray-bg">
+	<div class="main">
+	<!-- MAIN CONTENT -->
+	<div class="main-content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel">
+
+						<div class="panel-body">
+							<!--<div id="demo-line-chart" class="ct-chart"></div>-->
+							<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+							<div class="col-md-6" id="main" style="width: 1200px;height:400px;">
+								<script type="text/javascript" th:inline="javascript">
+
+									//在js读取thymeleaf变量值
+									var dataname=[[${datanameJson}]];
+									var datanum=[[${datanumJson}]];
+
+									// 基于准备好的dom，初始化echarts实例
+									var myChart = echarts.init(document.getElementById('main'));
+									// 指定图表的配置项和数据
+									var option = {
+
+										tooltip: {
+											trigger: 'axis',
+											axisPointer: { type: 'cross' }
+										},
+										title: {
+											text: '图书借阅数据'
+										},
+										legend: {
+											data: ['借阅数量'],
+											textStyle: {  // 图列内容样式
+												color: '#7dd5b9',  // 字体颜色
+											},
+										},
+										xAxis: {
+											data: JSON.parse(dataname),
+											axisLabel: {
+												//x轴文字的配置
+												show: true,
+												interval: 0,//使x轴文字显示全
+												textStyle: {
+													color: "rgb(12,12,12)"
+												},
+												formatter: function(params) {
+													var newParamsName = "";
+													var paramsNameNumber = params.length;
+													var provideNumber = 2; //一行显示几个字
+													var rowNumber = Math.ceil(paramsNameNumber / provideNumber);
+													if (paramsNameNumber > provideNumber) {
+														for (var p = 0; p < rowNumber; p++) {
+															var tempStr = "";
+															var start = p * provideNumber;
+															var end = start + provideNumber;
+															if (p == rowNumber - 1) {
+																tempStr = params.substring(start, paramsNameNumber);
+															} else {
+																tempStr = params.substring(start, end) + "\n";
+															}
+															newParamsName += tempStr;
+														}
+													} else {
+														newParamsName = params;
+													}
+													return newParamsName;
+												}
+											}
+
+
+										},
+										yAxis: {},
+										color:['#62d1de','#54d6b6','#a6db69','#ffd454','#ffa361','#d1d1d1'],//在这里设置colorList，是一个数组，图片颜色会按顺序选取
+										series: [
+											{
+												name: '数量',
+												type: 'bar',
+												data: JSON.parse(datanum)
+											}
+										]
+									};
+
+
+									// 使用刚指定的配置项和数据显示图表。
+									myChart.setOption(option);
+								</script>
+							</div>
+
+							<div class="col-md-6" id="main1" style="margin-top: 70px; width: 1200px;height:400px;">
+
+								<script type="text/javascript" th:inline="javascript">
+
+									// 在js读取thymeleaf变量值
+									var datanameJson = [[${datanameJson}]]; // 假设这是一个JSON字符串，表示图例名称的数组
+									var countJson = [[${countJson}]]; // 假设这是一个JSON字符串，表示饼状图的数据字典
+
+									var dataname = JSON.parse(datanameJson);
+									var count = JSON.parse(countJson);
+									// 基于准备好的dom，初始化echarts实例
+									var myChart1 = echarts.init(document.getElementById('main1'));
+									option = {
+										title: {
+											text: '图书借阅数据信息',
+											subtext: '借阅详情',
+											left: 'center'
+										},
+										tooltip: {
+											trigger: 'item',
+											formatter: '{a} <br/>{b} : {c} ({d}%)'
+										},
+										legend: {
+											orient: 'vertical',
+											left: 'left',
+											data: dataname
+										},
+										//在这里设置colorList，是一个数组，图片颜色会按顺序选取
+										series: [
+											{
+												name: dataname,
+												type: 'pie',
+												radius: '55%',
+												center: ['50%', '60%'],
+												itemStyle: {
+													color: function () {
+														return (
+																'rgb(' +
+																[
+																	Math.round(Math.random() * 200),
+																	Math.round(Math.random() * 400),
+																	Math.round(Math.random() * 600)
+																].join(',') +
+																')'
+														);
+													}
+												},
+												data: Object.entries(count).map(function ([name, value]) {
+													// 使用字典的键和值构建数据对象
+													return { name: name, value: Number(value) }; // 确保value是数字类型
+												}),
+												emphasis: {
+													itemStyle: {
+														shadowBlur: 10,
+														shadowOffsetX: 0,
+														shadowColor: 'rgba(0, 0, 0, 0.5)'
+													}
+												}
+											}
+										]
+									};
+									// 使用刚指定的配置项和数据显示图表。
+									myChart1.setOption(option);
+								</script>
+							</div>
+
+						</div>
+						</div>
+					</div>
+				</div>
+		</div>
+	</div>
+	</div>
+	<!-- END MAIN CONTENT -->
+
+</body>
+
+<th:block th:include="include :: footer"/>
+
+</html>

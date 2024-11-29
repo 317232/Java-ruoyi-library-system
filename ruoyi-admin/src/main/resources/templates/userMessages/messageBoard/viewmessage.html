@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('查看留言信息')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="post-form">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            留言编号：<input type="text" name="id"/>
+                        </li>
+                        <li>
+                            借阅证编号：<input type="text" name="cardId"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+
+
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix =ctx + "userMessages/messageBoard";
+
+    $(function () {
+        var options = {
+            url : prefix + "/viewmessage",
+            viewUrl: prefix + "/viewmessage",
+            method: 'post',
+            modalName: "留言信息",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '留言编号'
+                },
+                {
+                    field: 'cardId',
+                    title: '借阅证编号',
+                    sortable: true
+                },
+                {
+                    field: 'userName',
+                    title: '留言者',
+                    sortable: true
+                },
+                {
+                    field: 'content',
+                    title: '内容',
+                    sortable: true
+                },
+                {
+                    field: 'publicDate',
+                    title: '创建时间',
+                    sortable: true
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

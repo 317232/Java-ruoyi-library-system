@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.TBorrowCardMapper">
+    <resultMap id="BaseResultMap" type="com.ruoyi.web.domain.vo.TBorrowCardVo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="rule_id" jdbcType="INTEGER" property="ruleId" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        tbc.id, tbc.user_id, tbc.rule_id, tbc.status
+    </sql>
+    <select id="selectList" parameterType="com.ruoyi.web.domain.vo.TBorrowCardVo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        ,tr.rules_name as rulesName,u.user_name as userName
+        from t_borrow_card tbc
+        left join t_rules tr on tbc.rule_id = tr.id
+        left join sys_user u on tbc.user_id = u.user_id
+        <where>
+            tbc.is_delete = 0
+            <if test="ruleId != null  and ruleId != ''">and tbc.rule_id = #{ruleId}</if>
+            <if test="userId != null  and userId != ''">and tbc.user_id = #{userId}</if>
+
+        </where>
+    </select>
+
+    <select id="selectByUserIdCard" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        , tr.rules_name as rulesName, u.user_name as userName
+        from t_borrow_card tbc
+        left join t_rules tr on tbc.rule_id = tr.id
+        left join sys_user u on tbc.user_id = u.user_id
+        where tbc.user_id = #{userId} and tbc.is_delete = 0
+    </select>
+
+    <select id="selectByPrimaryUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select * from t_borrow_card
+        where user_id = #{userId} LIMIT 1
+    </select>
+
+    <select id="selectByUserAll" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select * from t_borrow_card
+        where user_id = #{userId}
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_borrow_card tbc
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <update id="deleteByPrimaryKey" parameterType="java.util.List">
+        <foreach collection="ids" item="id" separator=";">
+            update t_borrow_card set is_delete = 1 where id = #{id}
+        </foreach>
+    </update>
+    <insert id="insertSelective" parameterType="com.ruoyi.web.domain.TBorrowCard">
+        insert into t_borrow_card
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="ruleId != null">
+                rule_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="ruleId != null">
+                #{ruleId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=SMALLINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.web.domain.TBorrowCard">
+        update t_borrow_card
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="ruleId != null">
+                rule_id = #{ruleId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

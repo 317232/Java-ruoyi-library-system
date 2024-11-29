@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('图书归还报表')"/>
+
+</head>
+<body class="gray-bg">
+<div class="container-div">
+<div class="row">
+    <div class="col-sm-12 search-collapse">
+        <form id="post-form">
+            <div class="select-list">
+                <ul>
+                    <li>
+                        借阅卡编号：<input type="text" name="cardId"/>
+                    </li>
+                    <li>
+                        书籍编号：<input type="text" name="bookId"/>
+                    </li>
+                    <li>
+                        <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                        <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                    </li>
+                </ul>
+            </div>
+        </form>
+
+    </div>
+    <div class="col-sm-12 select-table table-striped">
+        <table id="bootstrap-table"></table>
+    </div>
+</div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+
+    var prefix = ctx + "books/borrowSelective";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            modalName: "归还报表",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'cardId',
+                    title: '借阅证编号',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'bookId',
+                    title: '图书编号',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'borrowDate',
+                    title: '借阅时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'endDate',
+                    title: '截止时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'returnDate',
+                    title: '归还时间',
+                    align: 'center',
+                    sortable: true
+                },
+                {
+                    field: 'illegal',
+                    title: '违章时间',
+                    align: 'center',
+                    sortable: true
+                }]
+        };
+        $.table.init(options);
+    });
+    $(document).ready(function() {
+        $('.hover-trigger').hover(
+            function() {
+                // 当鼠标悬停在.hover-trigger上时
+                var $this = $(this); // 当前hover的.hover-trigger元素
+                $this.closest('li').find('.hid-show').show(); // 找到最近的li元素内的.hid-show并显示它
+            },
+            function() {
+                // 当鼠标离开.hover-trigger时
+                var $this = $(this); // 当前hover的.hover-trigger元素
+                $this.closest('li').find('.hid-show').hide(); // 找到最近的li元素内的.hid-show并隐藏它
+            }
+        );
+    });
+</script>
+</body>
+</html>

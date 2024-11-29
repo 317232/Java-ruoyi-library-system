@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.TRulesMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.web.domain.TRules">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rules_name" jdbcType="VARCHAR" property="rulesName" />
+    <result column="borrow_num" jdbcType="INTEGER" property="borrowNum" />
+    <result column="limit_day" jdbcType="INTEGER" property="limitDay" />
+    <result column="library_name" jdbcType="VARCHAR" property="libraryName"/>
+    <result column="borrow_library" jdbcType="VARCHAR" property="borrowLibrary" />
+    <result column="overtime_fee" jdbcType="DECIMAL" property="overtimeFee" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, rules_name, borrow_num, limit_day, borrow_library,overtime_fee
+  </sql>
+  <select id="selectList" parameterType="com.ruoyi.web.domain.TRules" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_rules tr where tr.is_delete = 0
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_rules tr where tr.id = #{id,jdbcType=INTEGER} and tr.is_delete = 0
+  </select>
+  <update id="deleteByPrimaryKey" parameterType="java.util.List">
+    <foreach collection="ids" item="id" separator=";">
+      update t_rules set is_delete = 1 where id = #{id}
+    </foreach>
+  </update>
+  <insert id="insertSelective" parameterType="com.ruoyi.web.domain.TRules">
+    insert into t_rules
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="rulesName != null">
+        rules_name,
+      </if>
+      <if test="borrowNum != null">
+        borrow_num,
+      </if>
+      <if test="limitDay != null">
+        limit_day,
+      </if>
+      <if test="borrowLibrary != null">
+        borrow_library,
+      </if>
+      <if test="overtimeFee != null">
+        overtime_fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="rulesName != null">
+        #{rulesName,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowNum != null">
+        #{borrowNum,jdbcType=INTEGER},
+      </if>
+      <if test="limitDay != null">
+        #{limitDay,jdbcType=INTEGER},
+      </if>
+      <if test="borrowLibrary != null">
+        #{borrowLibrary,jdbcType=VARCHAR},
+      </if>
+      <if test="overtimeFee != null">
+        #{overtimeFee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.web.domain.TRules">
+    update t_rules
+    <set>
+      <if test="rulesName != null">
+        rules_Name = #{rulesName,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowNum != null">
+        borrow_Num = #{borrowNum,jdbcType=INTEGER},
+      </if>
+      <if test="limitDay != null">
+        limit_Day = #{limitDay,jdbcType=INTEGER},
+      </if>
+      <if test="borrowLibrary != null">
+        borrow_Library = #{borrowLibrary,jdbcType=VARCHAR},
+      </if>
+      <if test="overtimeFee != null">
+        overtime_Fee = #{overtimeFee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

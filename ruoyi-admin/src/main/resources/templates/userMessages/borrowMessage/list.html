@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <th:block th:include="include :: header('个人借阅信息查看')"/>
+
+</head>
+<body class="gray-bg">
+<h1 style="width: 1000px; text-align: center">图书借阅记录</h1>
+
+<div class="container-div">
+  <div class="row">
+
+
+      <div class="col-sm-12 select-table table-striped">
+        <table id="bootstrap-table"></table>
+      </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+  var datas = [[${@dict.getType('sys_normal_disable')}]];
+  var prefix = ctx + "userMessages/borrowMessage";
+
+  $(function () {
+    var options = {
+      url: prefix + "/list",
+      modalName: "信息",
+      columns: [{
+        checkbox: true
+      },
+        {
+          field: 'id',
+          title: 'ID',
+          align: 'center'
+        },
+        {
+          field: 'cardId',
+          title: '借阅证编号',
+          align: 'center'
+        },
+        {
+          field: 'bookId',
+          title: '书籍编号',
+          align: 'center',
+          sortable: true
+        },
+        {
+          field: 'borrowDate',
+          title: '借阅时间',
+          align: 'center',
+          sortable: true
+        },
+        {
+          field: 'endDate',
+          title: '最后借阅时间',
+          align: 'center',
+          sortable: true
+        },
+        {
+          field: 'returnDate',
+          title: '归还时间',
+          align: 'center',
+          sortable: true
+        }
+        ]
+    };
+    $.table.init(options);
+  });
+  $(document).ready(function() {
+    $('.hover-trigger').hover(
+            function() {
+              // 当鼠标悬停在.hover-trigger上时
+              var $this = $(this); // 当前hover的.hover-trigger元素
+              $this.closest('li').find('.hid-show').show(); // 找到最近的li元素内的.hid-show并显示它
+            },
+            function() {
+              // 当鼠标离开.hover-trigger时
+              var $this = $(this); // 当前hover的.hover-trigger元素
+              $this.closest('li').find('.hid-show').hide(); // 找到最近的li元素内的.hid-show并隐藏它
+            }
+    );
+  });
+</script>
+</body>
+</html>

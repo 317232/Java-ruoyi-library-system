@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('新增借阅证')" />
+</head>
+
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-borrowcard-add">
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">用户：</label>
+				<div class="col-sm-8">
+					<select id="userId" name="userId" class="form-control m-b">
+						<option th:each="dict : ${users}" th:text="${dict.userName}" th:value="${dict.userId}"/>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">所属规则：</label>
+				<div class="col-sm-8">
+					<select id="ruleId" name="ruleId" class="form-control m-b">
+						<option th:each="dict : ${rules}" th:text="${dict.rulesName}" th:value="${dict.id}"/>
+					</select>
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript">
+		var prefix = ctx + "books/borrowcard";
+	    
+		$("#form-borrowcard-add").validate({
+		    focusCleanup: true
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	        	$.operate.save(prefix + "/addBorrowCard", $('#form-borrowcard-add').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

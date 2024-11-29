@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.TBorrowBooksMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.web.domain.Bo.TBorrowBookBo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="card_id" jdbcType="INTEGER" property="cardId" />
+    <result column="book_id" jdbcType="INTEGER" property="bookId" />
+    <result column="borrow_date" jdbcType="TIMESTAMP" property="borrowDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="return_date" jdbcType="TIMESTAMP" property="returnDate" />
+    <result column="illegal" jdbcType="VARCHAR" property="illegal" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="is_delete" jdbcType="TINYINT" property="isDelete" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, card_id, book_id, borrow_date, end_date, return_date, illegal, status
+  </sql>
+  <select id="selectList" parameterType="com.ruoyi.web.domain.Bo.TBorrowBookBo" resultMap="BaseResultMap">
+    select tbb.id, tbb.card_id, tbb.book_id, tbb.borrow_date, tbb.end_date, tbb.return_date, tbb.illegal, tbb.status, su.login_name as userName
+    from t_borrow_books tbb
+    LEFT JOIN t_borrow_card tbc on tbc.id = tbb.card_id
+    LEFT JOIN sys_user su on su.user_id = tbc.user_id
+    <where>
+      tbb.is_delete = 0
+      <if test="borrowStartTime != null">
+        AND date_format(tbb.borrow_date,'%Y%m%d') &gt;= date_format(#{borrowStartTime},'%Y%m%d')
+      </if>
+      <if test="borrowEndTime != null">
+        AND date_format(tbb.borrow_date,'%Y%m%d') &lt;= date_format(#{borrowEndTime},'%Y%m%d')
+      </if>
+      <if test="startTime != null">
+        AND date_format(tbb.end_date,'%Y%m%d') &gt;= date_format(#{startTime},'%Y%m%d')
+      </if>
+      <if test="endTime != null">
+        AND date_format(tbb.end_date,'%Y%m%d') &lt;= date_format(#{endTime},'%Y%m%d')
+      </if>
+      <if test="returnStartTime != null">
+        AND date_format(tbb.return_date,'%Y%m%d') &gt;= date_format(#{returnStartTime},'%Y%m%d')
+      </if>
+      <if test="returnEndTime != null">
+        AND date_format(tbb.return_date,'%Y%m%d') &lt;= date_format(#{returnEndTime},'%Y%m%d')
+      </if>
+      <if test="status != null and status !=''">
+        AND tbb.status = #{status}
+      </if>
+      <if test="bookId != null and bookId !=''">
+        AND tbb.book_id = #{bookId}
+      </if>
+      <if test="cardId != null  and cardId != ''">and tbb.card_id like concat ('%',#{cardId},'%')</if>
+    </where>
+  </select>
+<!-- 有借过图书的用户名查询借阅书籍内容 -->
+  <select id="selectByViewList" parameterType="String" resultMap="BaseResultMap">
+    select tbb.id, tbb.card_id, tbb.book_id, tbb.borrow_date, tbb.end_date, tbb.return_date, tbb.illegal, tbb.status, su.login_name as userName
+    from t_borrow_books tbb
+    LEFT JOIN t_borrow_card tbc on tbc.id = tbb.card_id
+    LEFT JOIN sys_user su on su.user_id = tbc.user_id
+    where su.login_name = #{userName} and tbb.is_delete = 0 and tbb.illegal IS NULL and tbb.status = 0
+  </select>
+
+  <select id="selectByPrimaryId" parameterType="com.ruoyi.web.domain.TBorrowBooks" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_borrow_books
+    where card_id = #{cardId,jdbcType=INTEGER} and is_delete = 0
+  </select>
+
+  <select id="selectByViolation" parameterType="com.ruoyi.web.domain.TBorrowBooks" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from t_borrow_books
+    where card_id = #{cardId,jdbcType=INTEGER} and illegal is NOT NULL
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_borrow_books
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+<!--  查找未归还的书籍记录 -->
+  <select id="selectByBookId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_borrow_books
+    where book_id = #{bookId,jdbcType=INTEGER} and return_date IS NULL and status = 0
+  </select>
+
+
+<!--  查找借阅数量 -->
+  <select id="findDataNum" parameterType="Integer">
+    select count(*) from t_borrow_books
+    where book_id = #{bookId, jdbcType=INTEGER}
+  </select>
+
+<!--  删除 -->
+  <update id="deleteByPrimaryKey" parameterType="java.util.List">
+    <foreach collection="ids" item="id" separator=";">
+      update t_borrow_books set is_delete = 1 where id = #{id}
+    </foreach>
+  </update>
+
+  <insert id="insertSelective" parameterType="com.ruoyi.web.domain.TBorrowBooks">
+    insert into t_borrow_books
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="cardId != null">
+        card_id,
+      </if>
+      <if test="bookId != null">
+        book_id,
+      </if>
+      <if test="borrowDate != null">
+        borrow_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="returnDate != null">
+        return_date,
+      </if>
+      <if test="illegal != null">
+        illegal,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="cardId != null">
+        #{cardId,jdbcType=INTEGER},
+      </if>
+      <if test="bookId != null">
+        #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null">
+        #{borrowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnDate != null">
+        #{returnDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="illegal != null">
+        #{illegal,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByEndDate" parameterType="int" resultType="int">
+    select count(1) from t_borrow_books
+    where date_format(end_date,'%Y%m%d') &gt;=NOW() and card_id = #{cardId}
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ruoyi.web.domain.TBorrowBooks">
+    update t_borrow_books
+    <set>
+      <if test="cardId != null">
+        card_id = #{cardId,jdbcType=INTEGER},
+      </if>
+      <if test="bookId != null">
+        book_id = #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null">
+        borrow_date = #{borrowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnDate != null">
+        return_date = #{returnDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="illegal != null">
+        illegal = #{illegal,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByEndDate" parameterType="com.ruoyi.web.domain.Bo.TBorrowBookBo">
+    update t_borrow_books
+    <set>
+      <if test="endDate != null">
+        end_date = #{endDate, jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

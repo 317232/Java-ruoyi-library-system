@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('查询书籍是否逾期')" />
+</head>
+<style>
+    .btn-n{
+        margin:20px 100px 0;
+        width: 100px;
+
+    }
+</style>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-return-edit"  th:object="${tBorrowBooks}">
+
+        <!-- 如果确实需要这些隐藏字段，请保留它们 -->
+         <input id="id" name="id" type="hidden" th:field="*{id}" />
+         <input id="cardId" name="cardId" type="hidden" th:field="*{cardId}">
+        <input class="form-control" type="hidden" name="overtimeFee" th:value="${overtimeFee}" id="overtimeFee" required>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label" for="bookId">图书编号：</label>
+            <div class="col-sm-8">
+                <input class="form-control" disabled="disabled" type="text" name="bookId" th:value="${bookId}" id="bookId" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-n btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>查 询</button>&nbsp;
+            <button type="button" class="btn btn-n btn-sm btn-danger" onclick="close11()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<script  type="text/javascript">
+    var prefix = ctx + "books/book"
+    var bookId = document.getElementById("bookId").value
+
+
+    $('#form-return-edit').validate({
+        focusCleanup: true,
+
+    });
+
+    function close11(){
+        $.modal.close()
+    }
+
+    function submitHandler() {
+        var overdueFee = document.getElementById("overtimeFee").value
+        console.log(overdueFee)
+
+        if(overdueFee > 0){
+
+            var Money = prompt("您已逾期归还书籍，需支付逾期费用:",overdueFee + "元")
+            if(Money != null){
+                if($.validate.form()){
+                    $.operate.saveModal(prefix + "/returnBook", $('#form-return-edit').serialize())
+                }
+                $.modal.closeAll()
+            }else{
+                $.modal.closeAll()
+            }
+        }else{
+            if ($.validate.form()) {
+                $.operate.saveModal(prefix + "/returnBook", $('#form-return-edit').serialize())
+            }
+            $.modal.closeAll()
+        }
+
+    }
+
+</script>
+</body>
+</html>

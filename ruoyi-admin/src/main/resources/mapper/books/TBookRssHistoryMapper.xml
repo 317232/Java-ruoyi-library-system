@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.TBookRssHistoryMapper">
+    <resultMap id="BaseMap" type="com.ruoyi.web.domain.vo.TBookRssHistoryVo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="book_id" jdbcType="INTEGER" property="bookId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_delete" jdbcType="INTEGER" property="isDelete"/>
+    </resultMap>
+    <sql id="select_List">
+        tbrh.id,tbrh.book_id,tbrh.user_id,tbrh.create_time
+    </sql>
+
+    <select id="selectList" parameterType="com.ruoyi.web.domain.vo.TBookRssHistoryVo" resultMap="BaseMap">
+        SELECT
+        tbsh.id,
+        tb.`name` as bookName,
+        tb.author,
+        u.user_name as userName,
+        tl.`name` as libraryName,
+        tbsh.create_time
+        from t_book_rss_history tbsh
+        LEFT JOIN t_books tb on tb.id = tbsh.book_id
+        LEFT JOIN t_library tl  ON tl.id = tb.library_id
+        LEFT JOIN sys_user u on u.user_id = tbsh.user_id
+        <where>
+            tbsh.is_delete = 0
+            <if test="id != null  and id != ''">and tbsh.id like concat ('%',#{id},'%')</if>
+            <if test="userName != null  and userName != ''">and u.user_name like concat ('%',#{userName},'%')</if>
+            <if test="bookName != null  and bookName != ''">and tb.name like concat ('%',#{bookName},'%')</if>
+            <if test="author != null  and author != ''">and tb.author like concat ('%',#{author},'%')</if>
+            <if test="libraryName != null  and libraryName != ''">and tl.name like concat ('%',#{libraryName},'%')</if>
+            <if test="createStartTime != null">
+                AND date_format(tbsh.create_time, '%Y%m%d') &gt;= date_format(#{createStartTime}, '%Y%m%d')
+            </if>
+            <if test="createEndTime != null">
+                AND date_format(tbsh.create_time,'%Y%m%d') &lt;= date_format(#{createEndTime},'%Y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByBookId" resultMap="BaseMap">
+        select <include refid="select_List"/>
+        FROM t_book_rss_history tbrh
+        where tbrh.book_id = #{bookId} and tbrh.is_delete = 0
+    </select>
+
+    <select id="selectUserIds" resultType="Long">
+        select tbrh.user_id
+        from t_book_rss_history tbrh
+        LEFT JOIN t_books tb on tb.id = tbrh.book_id
+        LEFT JOIN sys_user u on u.user_id = tbrh.user_id
+        where tbrh.is_delete = 0 and tbrh.book_id = #{bookId}
+
+    </select>
+
+
+    <select id="selectByBookList" resultMap="BaseMap">
+        select <include refid="select_List"/>
+        from t_book_rss_history tbrh
+        where tbrh.book_id = #{bookId} and tbrh.is_delete = 0
+    </select>
+
+    <select id="selectByUserIdList" resultMap="BaseMap">
+        select <include refid="select_List"/>,tbrh.is_delete
+        from t_book_rss_history tbrh
+        where tbrh.user_id = #{userId}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.ruoyi.web.domain.vo.TBookRssHistoryVo">
+        insert into t_book_rss_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bookId != null">
+                book_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bookId != null">
+                #{bookId, jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="deleteById" parameterType="com.ruoyi.web.domain.TBookRssHistory">
+        update t_book_rss_history
+        set is_delete = 1
+        where id = #{id}
+    </update>
+
+    <update id="deleteSelective">
+        <foreach collection="ids" item="id" separator=";">
+            update t_book_rss_history set is_delete = 1 where id = #{id}
+        </foreach>
+    </update>
+
+
+</mapper>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增订阅')" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-bookrsshistory-add" >
+
+        <input class="form-control" type="hidden" th:value="${bookId}"  name="bookId" id="bookId">
+        <input class="form-control" name="userId" type="hidden" th:value="${userId}" id="userId" >
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">用户名：</label>
+
+            <div class="col-sm-8">
+                <select id="userName" name="userName" class="form-control m-b">
+                    <option th:each="dict : ${users}"
+                            th:text="${dict.userName}"
+                            th:value="${dict.userId}"
+                            th:attr="data-id=${dict.userId}"/>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">订阅书籍：</label>
+            <div class="col-sm-8">
+                <select id="bookName" name="bookName" class="form-control m-b">
+                    <option th:each="dict : ${books}"
+                            th:text="${dict.name}"
+                            th:value="${dict.id}"
+                            th:attr="data-id=${dict.id}" />
+                </select>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<script type="text/javascript">
+    var prefix = ctx + "books/bookrsshistory";
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var selectElement = document.getElementById('bookName');
+        var userNameInput = document.getElementById('bookId');
+
+        selectElement.addEventListener('change', function() {
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+            userNameInput.value = selectedOption.getAttribute('data-id');
+        });
+        // 当选项改变时调用这个函数
+        selectElement.addEventListener('change', setUserNameFromSelectedOption);
+
+        // 在页面加载时也调用这个函数来设置默认用户名
+        setUserNameFromSelectedOption();
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var selectElement = document.getElementById('userName');
+        var userNameInput = document.getElementById('userId');
+
+        selectElement.addEventListener('change', function() {
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+            userNameInput.value = selectedOption.getAttribute('data-id');
+        });
+        // 当选项改变时调用这个函数
+        selectElement.addEventListener('change', setUserNameFromSelectedOption);
+
+        // 在页面加载时也调用这个函数来设置默认用户名
+        setUserNameFromSelectedOption();
+    });
+
+    $("#form-bookrsshistory-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-bookrsshistory-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

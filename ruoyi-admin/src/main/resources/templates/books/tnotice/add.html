@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('新增公告')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-tnotice-add">
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">标题：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="title" id="title" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">内容：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="detail" id="detail" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">发布日期：</label>
+				<div class="col-sm-8">
+					<input class="form-control"  type="datetime-local" name="publishDate" id="publishDate" required readonly>
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript">
+		var prefix = ctx + "books/tnotice";
+		function setValue(element, date) {
+			const isoString = date.toISOString();
+			element.value = isoString.substring(0, isoString.indexOf("T") + 6);
+		}
+
+		$("#form-tnotice-add").validate({
+		    focusCleanup: true
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	        	$.operate.save(prefix + "/add", $('#form-tnotice-add').serialize());
+	        }
+	    }
+
+		// 获取当前日期和时间，并格式化为 datetime-local 所需的格式
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要加1并补零
+		const day = String(now.getDate()).padStart(2, '0'); // 补零
+		const hours = String(now.getHours()).padStart(2, '0'); // 补零
+		const minutes = String(now.getMinutes()).padStart(2, '0'); // 补零
+		const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+		// 设置 input 的值为当前日期和时间，并禁用它
+		document.getElementById('publishDate').value = formattedDateTime;
+		document.getElementById('publishDate').disabled = true; // 禁用输入
+
+	</script>
+</body>
+</html>
